@@ -5,240 +5,396 @@
 [![Built with Next.js](https://img.shields.io/badge/Next.js-14-black)](https://nextjs.org/)
 [![OnchainKit](https://img.shields.io/badge/OnchainKit-Integrated-blue)](https://onchainkit.xyz/)
 [![Base](https://img.shields.io/badge/Base-Sepolia-blue)](https://base.org/)
-[![Polymarket](https://img.shields.io/badge/Polymarket-CLOB_API-purple)](https://polymarket.com/)
+[![Polymarket](https://img.shields.io/badge/Polymarket-API-purple)](https://polymarket.com/)
 
 ## 🎯 What is Axiom?
 
-Axiom is a "Proof of Intelligence" engine that helps prediction market traders find their true edge. It:
+Axiom is a **Proof of Intelligence** engine that transforms prediction market trading from guesswork into mathematical precision. It combines real-time market data, portfolio optimization, and blockchain verification to help traders find and prove their edge.
 
-1. **Fetches live market data** from Polymarket's CLOB API
-2. **Calculates optimal bet sizes** using the Kelly Criterion
-3. **Mints predictions as NFTs** on Base to prove you knew it before it happened
+### The Problem
 
-### Why It Matters
+Prediction markets like Polymarket have billions in trading volume, but most traders:
+- ❌ Guess their position sizes
+- ❌ Can't optimize across multiple markets
+- ❌ Have no way to prove they predicted correctly *before* the event
 
-Prediction markets like Polymarket have billions in trading volume, but most traders just guess their position sizes. Axiom applies mathematical rigor to bet sizing - the same techniques used by quantitative hedge funds - and makes it accessible to everyone.
+### The Solution
 
-## ✨ Features (V2 - Upgraded!)
+Axiom provides:
+1. **Live Market Data** - Real-time pricing from Polymarket via server-side proxy
+2. **Portfolio Optimization** - Kelly Criterion across multiple uncorrelated markets
+3. **Blockchain Proof** - Mint predictions as NFTs on Base with immutable timestamps
 
-- 🟢 **Live Market Data**: Real-time Polymarket data via server-side proxy (NO CORS!)
-- 💼 **Portfolio Mode**: Optimize allocation across multiple markets simultaneously
-- 🧮 **Kelly Criterion Math**: Mathematically optimal bet sizing for multi-market portfolios
-- 🎨 **Mint NFTs on Base**: Immutable proof of your predictions
-- ⛓️ **Real Oracle Feed**: Live blockchain reads - no mock data, fully decentralized
-- 💎 **OnchainKit Integration**: Seamless wallet connection and identity
-- 🌙 **Beautiful UI**: Dark mode with modern design
+---
+
+## ✨ Features
+
+### 🟢 Live Market Integration
+- Real-time data from Polymarket's API
+- Server-side proxy eliminates CORS issues
+- Auto-refreshes every 10 seconds
+
+### 💼 Portfolio Mode
+- Calculate optimal allocation across **two markets simultaneously**
+- Bitcoin > $100k + Ethereum > $4k
+- Automatic scaling if total exceeds 100% of bankroll
+- Color-coded edge indicators
+
+### 🧮 Kelly Criterion Math
+- Binary option formula: `f* = (p - C) / (1 - C)`
+- Real-time calculation as you type
+- Shows edge magnitude and bet size
+- Handles independent, uncorrelated bets
+
+### 🎨 NFT Minting on Base
+- Mint predictions as ERC-721 tokens
+- Stores market, bet size, edge, and timestamp
+- Gas costs < $0.01 on Base Sepolia
+- Verifiable on BaseScan
+
+### ⛓️ On-Chain Oracle Feed
+- Real blockchain reads (no mock data!)
+- Shows last 10 predictions from all users
+- Auto-refreshes from smart contract
+- Click to view user profiles
+
+### 💎 OnchainKit Integration
+- Seamless wallet connection
+- Beautiful `<Identity />` components
+- One-click Base network switching
+- Optimized for Base ecosystem
+
+---
 
 ## 🚀 Quick Start
 
 ### Prerequisites
 
-- Node.js 18.17.0 or higher
-- MetaMask or Coinbase Wallet
-- Base Sepolia testnet configured
-- Test ETH from Base Sepolia faucet
+- **Node.js** 18.17.0 or higher
+- **MetaMask** or Coinbase Wallet
+- **Base Sepolia** testnet configured
+- **Test ETH** from [Base Sepolia Faucet](https://www.coinbase.com/faucets/base-ethereum-sepolia-faucet)
 
 ### Installation
 
 ```bash
-# Install dependencies (already done!)
+# Clone the repository
+git clone <your-repo-url>
+cd MBC
+
+# Install dependencies
 npm install --legacy-peer-deps
 
 # Set up environment variables
-# .env.local with your OnchainKit API key
-# See ENV_SETUP_INSTRUCTIONS.md for details
+cp .env.example .env.local
+# Add your OnchainKit API key to .env.local
 
 # Run development server
 npm run dev
 ```
 
-Open [http://localhost:3001](http://localhost:3001) and start calculating!
+Open [http://localhost:3001](http://localhost:3001) 🎉
 
-### V2 Deployment
+### Smart Contract Deployment
 
-**After initial setup, deploy AxiomV2:**
+Before minting NFTs, you need to deploy the contract:
 
-1. Deploy `contracts/AxiomV2.sol` via Remix IDE
-2. Update contract address in `components/MintCard.tsx`
-3. Update contract address in `components/OracleFeedV2.tsx`
-4. Restart dev server
+1. Open [Remix IDE](https://remix.ethereum.org/)
+2. Create new file: `AxiomV2.sol`
+3. Copy contents from `contracts/AxiomV2.sol`
+4. Compile with Solidity 0.8.20+
+5. Deploy to **Base Sepolia** (Injected Provider - MetaMask)
+6. Copy the deployed contract address
+7. Update `CONTRACT_ADDRESS` in:
+   - `components/MintCard.tsx` (line 26)
+   - `components/OracleFeedV2.tsx` (line 40)
+8. Restart dev server
 
-See **[V2_QUICKSTART.md](V2_QUICKSTART.md)** for detailed instructions!
+**Detailed instructions:** [contracts/DEPLOYMENT_GUIDE_V2.md](contracts/DEPLOYMENT_GUIDE_V2.md)
+
+---
 
 ## 📚 Documentation
 
-- **[SETUP.md](SETUP.md)** - Complete wallet and testnet setup guide
-- **[contracts/DEPLOYMENT_GUIDE.md](contracts/DEPLOYMENT_GUIDE.md)** - Deploy the smart contract
+- **[SETUP.md](SETUP.md)** - Wallet setup and Base Sepolia configuration
+- **[contracts/DEPLOYMENT_GUIDE_V2.md](contracts/DEPLOYMENT_GUIDE_V2.md)** - Contract deployment walkthrough
 - **[TROUBLESHOOTING.md](TROUBLESHOOTING.md)** - Common issues and solutions
-- **[DEMO.md](DEMO.md)** - 3-minute presentation script for judges
+
+---
 
 ## 🏗️ Architecture
+
+### Tech Stack
+
+| Layer | Technology |
+|-------|------------|
+| **Framework** | Next.js 14 (App Router) + TypeScript |
+| **Styling** | Tailwind CSS + lucide-react icons |
+| **Blockchain** | Base Sepolia (Testnet) |
+| **Web3** | OnchainKit + wagmi + viem |
+| **Data** | React Query + Polymarket API |
+| **Smart Contracts** | Solidity 0.8.20+ |
+
+### Project Structure
 
 ```
 MBC/
 ├── app/
-│   ├── layout.tsx          # OnchainKit + wagmi providers
-│   ├── page.tsx            # Main dashboard
-│   ├── providers.tsx       # Web3 configuration
-│   └── globals.css         # Dark theme + glassmorphism
+│   ├── api/proxy/         # Server-side Polymarket proxy
+│   ├── layout.tsx         # OnchainKit + wagmi providers
+│   ├── page.tsx           # Main dashboard
+│   └── providers.tsx      # Web3 configuration
 ├── components/
-│   ├── Navbar.tsx          # Wallet connection (OnchainKit)
-│   ├── AxiomCalculator.tsx # Core logic: API + Kelly math
-│   ├── MintCard.tsx        # NFT minting button
-│   └── OracleFeed.tsx      # Social feed of predictions
+│   ├── Navbar.tsx         # Wallet connection (OnchainKit)
+│   ├── AxiomCalculatorV2.tsx  # Portfolio optimizer
+│   ├── MintCard.tsx       # NFT minting interface
+│   └── OracleFeedV2.tsx   # Live blockchain feed
 ├── utils/
-│   ├── kellyMath.ts        # Kelly Criterion calculations
-│   └── polymarketApi.ts    # Polymarket CLOB API client
+│   ├── kellyMath.ts       # Kelly Criterion formulas
+│   └── polymarketApi.ts   # API client with caching
 └── contracts/
-    ├── AxiomV1.sol         # ERC-721 prediction NFTs
-    └── deployment.json     # Contract address & ABI
+    ├── AxiomV2.sol        # ERC-721 with prediction storage
+    └── deployment.json    # Contract address & ABI
 ```
+
+### Data Flow
+
+```
+Frontend → Next.js API Route → Polymarket API → Frontend
+         ↓
+    Kelly Calculation
+         ↓
+    User Confirms
+         ↓
+    wagmi → AxiomV2 Contract → Base Sepolia
+         ↓
+    Transaction Hash
+         ↓
+    Oracle Feed Updates (reads from chain)
+```
+
+---
 
 ## 🧮 The Math: Kelly Criterion
 
-The Kelly Criterion is the mathematically optimal bet sizing formula:
+The Kelly Criterion calculates the optimal bet size to maximize long-term growth:
+
+### Formula (Binary Options)
 
 ```
 f* = (p - C) / (1 - C)
 ```
 
 Where:
-- **p** = Your probability estimate (0.0 to 1.0)
-- **C** = Market price/probability (0.0 to 1.0)  
 - **f\*** = Optimal fraction of bankroll to bet
+- **p** = Your probability estimate (0.0 to 1.0)
+- **C** = Current market price (0.0 to 1.0)
 
-### Example
+### Example: Bitcoin > $100k
 
-- Market prices BTC > $100k at 65% (C = 0.65)
-- You think it's 70% (p = 0.70)
-- Your edge: +5%
-- Kelly says bet: `(0.70 - 0.65) / (1 - 0.65) = 14.3%` of bankroll
+| Variable | Value |
+|----------|-------|
+| Market Price (C) | 65% (0.65) |
+| Your Belief (p) | 70% (0.70) |
+| Your Edge | +5% |
+| Kelly Fraction | (0.70 - 0.65) / (1 - 0.65) = **14.3%** |
 
-If your bankroll is $1,000, you should bet $143.
+**If your bankroll is $1,000, bet $143.**
 
-## 🎨 Tech Stack
+### Portfolio Mode
 
-| Category | Technology |
-|----------|------------|
-| **Framework** | Next.js 14 (App Router) |
-| **Language** | TypeScript |
-| **Styling** | Tailwind CSS |
-| **Blockchain** | Base Sepolia |
-| **Web3 SDK** | @coinbase/onchainkit |
-| **Web3 Hooks** | wagmi + viem |
-| **Data Fetching** | @tanstack/react-query |
-| **API** | Polymarket CLOB API |
-| **Icons** | lucide-react |
+When optimizing across **two independent markets**:
 
-## 🏆 Hackathon Tracks
+1. Calculate Kelly for each market separately
+2. If total > 100%, scale both proportionally (conservative)
+3. If total < 100%, use both allocations as-is
+4. Display recommendation based on which markets have edge
 
-### Base Track
+**Example:**
+- Bitcoin Kelly: 14.3% → **$143**
+- Ethereum Kelly: 10.0% → **$100**
+- **Total allocation: $243 (24.3% of bankroll)**
 
-**Criteria:**
-- ✅ **Onchain Magic (30%)**: NFT minting with immutable prediction proof
-- ✅ **Delight (25%)**: Beautiful UI, real-time calculations, smooth UX
-- ✅ **Utility (20%)**: Solves real problem for prediction market traders
-- ✅ **Technical (15%)**: Clean code, efficient contract, proper integration
-- ✅ **Cultural Resonance (10%)**: "Proof of Intelligence" as a new category
+---
 
-### Polymarket Bounty
+## 📖 How to Use
 
-**Requirements:**
-- ✅ **Direct Integration**: CLOB API for live market prices
-- ✅ **Real Market Data**: Bitcoin > $100k market (token_id: 217426...)
-- ✅ **Meaningful Use**: Core feature driving bet size calculations
+### 1. Connect Your Wallet
+Click **"Connect Wallet"** in the navbar. Approve the connection in MetaMask.
+
+### 2. View Live Market Prices
+See real-time prices for:
+- **Market 1:** Bitcoin > $100k 🟢
+- **Market 2:** Ethereum > $4k 🟢
+
+Both update every 10 seconds from Polymarket's API.
+
+### 3. Enter Your Probabilities
+Input what **YOU** believe the probability is for each market.
+
+**Tips:**
+- Be honest with yourself
+- Consider all available information
+- Don't just copy the market price!
+
+### 4. Set Your Bankroll
+Enter the total amount you're willing to allocate across both markets.
+
+### 5. Review Portfolio Allocation
+Axiom calculates optimal bet sizes for both markets:
+- **Green boxes** = Positive edge, allocate funds
+- **Gray boxes** = No edge, skip this market
+- **Purple total** = Combined portfolio allocation
+
+### 6. Mint Your Prediction
+Click **"Mint Prediction NFT"** to create immutable proof:
+- Stored on Base Sepolia blockchain
+- Includes market, bet size, edge, timestamp
+- Costs < $0.01 in gas
+- Appears in Oracle Feed instantly
+
+### 7. View the Oracle Feed
+See predictions from all users in real-time. Click any prediction to view that user's profile.
+
+---
+
+## 🎨 UI/UX Highlights
+
+- **Glassmorphism** design with dark theme
+- **Real-time calculations** as you type
+- **Color-coded indicators** (green = edge, red/gray = no edge)
+- **Smooth animations** and hover states
+- **Responsive layout** for mobile
+- **Live badges** with pulse animations
+- **Transaction states** with loading spinners
+- **BaseScan links** for verification
+
+---
+
+## 🏆 Built For
+
+### MBC 2025 Hackathon
+
+**Base Track:**
+- ✅ Onchain Magic: NFT minting with rich metadata
+- ✅ Delight: Beautiful UI with real-time updates
+- ✅ Utility: Solves real problem for traders
+- ✅ Technical: Clean architecture with API proxy
+- ✅ Cultural: "Proof of Intelligence" as new paradigm
+
+**Polymarket Bounty:**
+- ✅ Direct API integration via server-side proxy
+- ✅ Meaningful use: Powers core calculation engine
+- ✅ Real market data driving portfolio optimization
+
+---
 
 ## 🔧 Configuration
 
 ### Environment Variables
 
-Create `.env.local`:
+Create `.env.local` in the root directory:
 
 ```bash
+# Required: Get from https://portal.cdp.coinbase.com/
 NEXT_PUBLIC_ONCHAINKIT_API_KEY=your_api_key_here
 ```
 
-Get your API key from [Coinbase Developer Portal](https://portal.cdp.coinbase.com/).
+### Network Setup
 
-### Smart Contract
+**Base Sepolia Testnet:**
+- **Network Name:** Base Sepolia
+- **RPC URL:** https://sepolia.base.org
+- **Chain ID:** 84532
+- **Currency Symbol:** ETH
+- **Block Explorer:** https://sepolia.basescan.org
 
-After deploying `contracts/AxiomV1.sol` to Base Sepolia:
+Get test ETH: https://www.coinbase.com/faucets/base-ethereum-sepolia-faucet
 
-1. Copy the contract address
-2. Update `CONTRACT_ADDRESS` in `components/MintCard.tsx`
-3. Copy the ABI to `contracts/deployment.json`
-
-See [contracts/DEPLOYMENT_GUIDE.md](contracts/DEPLOYMENT_GUIDE.md) for step-by-step instructions.
+---
 
 ## 🐛 Troubleshooting
 
-### Polymarket API CORS Error
+### Issue: Market prices not loading
 
-This is expected in development! The code automatically uses a fallback price (0.65 for BTC > $100k). For production, proxy through a Next.js API route.
+**Solution:**
+- Check browser console for errors
+- Verify `/api/proxy` route exists
+- Restart dev server
+- Check if Polymarket's API is responding
 
-### Wallet Button Blank
+### Issue: Oracle Feed shows "No predictions yet"
 
-Ensure `import "@coinbase/onchainkit/styles.css";` is in `app/layout.tsx` before your custom CSS.
+**This is correct!** It means:
+- ✅ Contract is deployed
+- ✅ Feed is reading from blockchain
+- ❌ No one has minted yet
 
-### Transaction Fails
+**Action:** Be the first to mint a prediction!
 
-- Check you're on Base Sepolia network
-- Ensure you have at least 0.01 ETH
-- Verify contract address is correct in `MintCard.tsx`
+### Issue: Mint button fails
 
-See [TROUBLESHOOTING.md](TROUBLESHOOTING.md) for more solutions.
+**Checklist:**
+- [ ] Wallet connected?
+- [ ] On Base Sepolia network?
+- [ ] Contract address updated in both files?
+- [ ] Have at least 0.01 ETH for gas?
+- [ ] Contract actually deployed? (check BaseScan)
 
-## 📖 How to Use
+**More solutions:** [TROUBLESHOOTING.md](TROUBLESHOOTING.md)
 
-1. **Connect Wallet**: Click "Connect Wallet" in the navbar
-2. **View Market Price**: See live Bitcoin > $100k price from Polymarket
-3. **Enter Your Probability**: What do YOU think the probability is?
-4. **Set Bankroll**: How much capital are you willing to allocate?
-5. **Calculate Edge**: Axiom instantly computes your optimal bet size
-6. **Mint Prediction**: Create an NFT proof on Base Sepolia
-
-## 🎬 Demo Day
-
-Preparing for your presentation? See [DEMO.md](DEMO.md) for:
-
-- 3-minute script aligned with judging criteria
-- Technical talking points
-- Q&A preparation
-- Backup plans if something breaks
-- Body language tips
+---
 
 ## 🔮 Future Enhancements
 
-- [ ] Support for multiple Polymarket markets
-- [ ] Portfolio tracking across predictions
-- [ ] Reputation scores based on NFT history
+- [ ] Support 5+ markets with auto-discovery
+- [ ] Historical tracking with performance analytics
+- [ ] Reputation scores based on NFT accuracy
 - [ ] Social features: follow top predictors
-- [ ] Analytics dashboard with historical performance
+- [ ] Export portfolio as PDF report
 - [ ] Mobile app (PWA)
-- [ ] Integration with other prediction markets (Augur, Gnosis)
+- [ ] Mainnet deployment (Base L2)
+- [ ] Integration with Farcaster for social proof
+
+---
+
+## 🤝 Contributing
+
+Contributions welcome! Feel free to:
+- Report bugs via GitHub Issues
+- Submit pull requests
+- Suggest new features
+- Improve documentation
+
+---
 
 ## 📄 License
 
-MIT License - feel free to fork and build upon Axiom!
+MIT License - see [LICENSE](LICENSE) for details.
+
+---
 
 ## 🙏 Acknowledgments
 
-- **Base** for making blockchain accessible and affordable
+- **Base** for fast, affordable blockchain infrastructure
 - **Polymarket** for transparent prediction markets and open API
-- **OnchainKit** for seamless Web3 integration
-- **Ed Thorp** for inventing the Kelly Criterion
+- **Coinbase OnchainKit** for seamless Web3 integration
+- **Ed Thorp** for discovering the Kelly Criterion in 1956
+- **The MBC community** for the opportunity to build this
+
+---
 
 ## 🔗 Links
 
 - **Base:** https://base.org/
 - **OnchainKit:** https://onchainkit.xyz/
 - **Polymarket:** https://polymarket.com/
-- **Kelly Criterion:** https://en.wikipedia.org/wiki/Kelly_criterion
+- **Kelly Criterion (Wikipedia):** https://en.wikipedia.org/wiki/Kelly_criterion
+- **BaseScan (Sepolia):** https://sepolia.basescan.org/
 
 ---
 
 **Built with 💜 for MBC 2025 Hackathon**
 
 *Prove you knew it before it happened.* 🔮
-
 

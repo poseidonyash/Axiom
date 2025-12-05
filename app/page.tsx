@@ -211,7 +211,7 @@ export default function HomePage() {
               <span className="gradient-text">Prediction Intelligence</span>
             </h1>
             <p className="text-xl md:text-2xl text-gray-400 mb-6">
-              See what the world's top predictors are betting on
+              See what the world's top predictors are betting on and trade their predictions
             </p>
             <p className="text-gray-500 max-w-2xl mx-auto mb-8">
               Every prediction verified on-chain. Follow your favorite traders, celebrities, 
