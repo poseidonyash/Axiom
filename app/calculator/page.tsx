@@ -1,58 +1,19 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { Suspense } from "react";
 import Navbar from "@/components/Navbar";
 import AxiomCalculatorV2 from "@/components/AxiomCalculatorV2";
 import OracleFeedV2 from "@/components/OracleFeedV2";
-import { Brain, Target, Zap, CheckCircle, X } from "lucide-react";
+import { Brain, Target, Zap } from "lucide-react";
 
-export default function Home() {
-  const searchParams = useSearchParams();
-  const [copiedFrom, setCopiedFrom] = useState<string | null>(null);
-  const [showBanner, setShowBanner] = useState(false);
-
-  useEffect(() => {
-    // Check if we got here from a copied bet
-    if (searchParams.get('copied') === 'true') {
-      const copiedBet = localStorage.getItem('copiedBet');
-      if (copiedBet) {
-        try {
-          const betData = JSON.parse(copiedBet);
-          setCopiedFrom(betData.from);
-          setShowBanner(true);
-        } catch (e) {
-          console.error('Failed to parse copied bet:', e);
-        }
-      }
-    }
-  }, [searchParams]);
+// Wrapper component to handle Suspense
+function CalculatorContent() {
+  // Removed useSearchParams - not needed for static generation
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-black via-purple-950/10 to-black">
       {/* Navbar */}
       <Navbar />
-
-      {/* Investment Banner */}
-      {showBanner && copiedFrom && (
-        <div className="fixed top-20 left-1/2 -translate-x-1/2 z-50 max-w-md w-full mx-4">
-          <div className="bg-gradient-to-r from-green-600 to-emerald-600 rounded-lg p-4 shadow-2xl flex items-start gap-3 animate-slideDown">
-            <CheckCircle className="w-6 h-6 text-white shrink-0 mt-0.5" />
-            <div className="flex-1">
-              <div className="font-bold text-white">Investment Ready!</div>
-              <div className="text-sm text-white/90">
-                Following strategy from <span className="font-semibold">{copiedFrom}</span>
-              </div>
-            </div>
-            <button
-              onClick={() => setShowBanner(false)}
-              className="text-white/80 hover:text-white transition-colors"
-            >
-              <X className="w-5 h-5" />
-            </button>
-          </div>
-        </div>
-      )}
 
       {/* Hero Section */}
       <div className="pt-24 pb-8 px-4">
@@ -173,6 +134,21 @@ export default function Home() {
         </div>
       </div>
     </main>
+  );
+}
+
+export default function Home() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gradient-to-b from-black via-purple-950/10 to-black flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-2 border-purple-400 border-t-transparent mx-auto mb-4" />
+          <p className="text-gray-400">Loading Axiom...</p>
+        </div>
+      </div>
+    }>
+      <CalculatorContent />
+    </Suspense>
   );
 }
 
