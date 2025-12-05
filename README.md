@@ -9,7 +9,7 @@
 
 ## 🎯 What is Axiom?
 
-Axiom is a **Proof of Intelligence** engine that transforms prediction market trading from guesswork into mathematical precision. It combines real-time market data, portfolio optimization, and blockchain verification to help traders find and prove their edge.
+Axiom is a **Proof of Intelligence** engine that transforms prediction market trading from guesswork into mathematical precision. It combines real-time market data, portfolio optimization, and blockchain verification to help traders find and prove their edge. There are 2-sides to this project, the calculator that calculates your edge and optimal betting size and mint that prediction. The social platform allows you to view different users predictions and fractionally own their minted NFTs.
 
 ### The Problem
 
@@ -17,6 +17,7 @@ Prediction markets like Polymarket have billions in trading volume, but most tra
 - ❌ Guess their position sizes
 - ❌ Can't optimize across multiple markets
 - ❌ Have no way to prove they predicted correctly *before* the event
+- ❌ Can't trade on other people's predictions.
 
 ### The Solution
 
@@ -24,6 +25,7 @@ Axiom provides:
 1. **Live Market Data** - Real-time pricing from Polymarket via server-side proxy
 2. **Portfolio Optimization** - Kelly Criterion across multiple uncorrelated markets
 3. **Blockchain Proof** - Mint predictions as NFTs on Base with immutable timestamps
+4. **Social Platform** - To ride the wave with your favourite investor
 
 ---
 
@@ -54,9 +56,10 @@ Axiom provides:
 
 ### ⛓️ On-Chain Oracle Feed
 - Real blockchain reads (no mock data!)
-- Shows last 10 predictions from all users
+- Shows predictions from all users
 - Auto-refreshes from smart contract
 - Click to view user profiles
+- Buy they predictions
 
 ### 💎 OnchainKit Integration
 - Seamless wallet connection
