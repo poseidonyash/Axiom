@@ -1,9 +1,10 @@
 "use client";
 
-import { Radio, TrendingUp, Clock, User } from "lucide-react";
+import { Radio, TrendingUp, Clock, User, ExternalLink } from "lucide-react";
 import { useReadContract } from "wagmi";
 import { baseSepolia } from "wagmi/chains";
 import { formatDistanceToNow } from "date-fns";
+import Link from "next/link";
 
 // AxiomV2 Contract ABI for reading predictions
 const AXIOM_V2_READ_ABI = [
@@ -173,9 +174,10 @@ export default function OracleFeedV2() {
 
         {/* Predictions List */}
         {predictions && predictions.length > 0 && predictions.map((pred: OnchainPrediction, idx: number) => (
-          <div
+          <Link
             key={idx}
-            className="glass rounded-xl p-4 hover:bg-white/10 transition-all cursor-pointer group"
+            href={`/user/${pred.predictor}`}
+            className="glass rounded-xl p-4 hover:bg-white/10 transition-all cursor-pointer group block"
           >
             {/* User info */}
             <div className="flex items-center gap-3 mb-3">
@@ -183,8 +185,9 @@ export default function OracleFeedV2() {
                 {pred.predictor ? pred.predictor.slice(2, 4).toUpperCase() : "??"}
               </div>
               <div className="flex-1 min-w-0">
-                <div className="font-medium text-sm truncate font-mono">
+                <div className="font-medium text-sm truncate font-mono group-hover:text-purple-400 transition-colors flex items-center gap-1">
                   {formatAddress(pred.predictor)}
+                  <ExternalLink className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
                 </div>
                 <div className="text-xs text-gray-400 flex items-center gap-1">
                   <Clock className="w-3 h-3" />
@@ -221,7 +224,7 @@ export default function OracleFeedV2() {
                 Minted on Base
               </div>
             </div>
-          </div>
+          </Link>
         ))}
       </div>
 
