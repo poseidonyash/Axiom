@@ -43,24 +43,24 @@ export default function Navbar() {
               <Link
                 href="/"
                 className={`px-3 py-2 rounded-lg transition-all flex items-center gap-2 text-sm ${
-                  pathname === '/' 
-                    ? 'bg-purple-500/20 text-purple-300' 
-                    : 'text-gray-400 hover:text-white hover:bg-white/5'
-                }`}
-              >
-                <Target className="w-4 h-4" />
-                Calculate
-              </Link>
-              <Link
-                href="/community"
-                className={`px-3 py-2 rounded-lg transition-all flex items-center gap-2 text-sm ${
-                  pathname === '/community' || pathname?.startsWith('/user/')
+                  pathname === '/' || pathname?.startsWith('/user/')
                     ? 'bg-purple-500/20 text-purple-300' 
                     : 'text-gray-400 hover:text-white hover:bg-white/5'
                 }`}
               >
                 <Users className="w-4 h-4" />
                 Community
+              </Link>
+              <Link
+                href="/calculator"
+                className={`px-3 py-2 rounded-lg transition-all flex items-center gap-2 text-sm ${
+                  pathname === '/calculator'
+                    ? 'bg-purple-500/20 text-purple-300' 
+                    : 'text-gray-400 hover:text-white hover:bg-white/5'
+                }`}
+              >
+                <Target className="w-4 h-4" />
+                Make Prediction
               </Link>
             </div>
 

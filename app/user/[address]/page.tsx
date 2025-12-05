@@ -2,11 +2,15 @@
 
 import { useReadContract } from "wagmi";
 import { baseSepolia } from "wagmi/chains";
-import { ArrowLeft, TrendingUp, Clock, Target, ExternalLink, Share2, Copy, Check } from "lucide-react";
+import { ArrowLeft, TrendingUp, Clock, Target, ExternalLink, Share2, Copy, Check, CheckCircle } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { formatDistanceToNow } from "date-fns";
 import Navbar from "@/components/Navbar";
+import { getCelebProfile } from "@/utils/celebProfiles";
+import { getMockPredictionsForAddress } from "@/utils/mockPredictions";
 
 // AxiomV2 Contract ABI for reading predictions
 const AXIOM_V2_READ_ABI = [
@@ -44,6 +48,9 @@ interface OnchainPrediction {
 export default function UserProfilePage({ params }: { params: { address: string } }) {
   const userAddress = params.address;
   const [copied, setCopied] = useState(false);
+  const [copiedBet, setCopiedBet] = useState<string | null>(null);
+  const celeb = getCelebProfile(userAddress);
+  const router = useRouter();
 
   // Read all predictions from the blockchain
   const { data: allPredictions, isLoading } = useReadContract({
@@ -54,10 +61,19 @@ export default function UserProfilePage({ params }: { params: { address: string 
     chainId: baseSepolia.id,
   });
 
-  // Filter predictions for this user
-  const userPredictions = allPredictions?.filter(
+  // Get mock predictions for this user (if celebrity)
+  const mockPredictions = getMockPredictionsForAddress(userAddress);
+  
+  // Filter real predictions for this user
+  const realPredictions = allPredictions?.filter(
     (pred: OnchainPrediction) => pred.predictor.toLowerCase() === userAddress.toLowerCase()
   ) || [];
+  
+  // Combine real and mock predictions
+  const userPredictions = [...mockPredictions, ...realPredictions].sort((a, b) => {
+    // Sort by timestamp, newest first
+    return Number(b.timestamp) - Number(a.timestamp);
+  });
 
   // Calculate user stats
   const stats = userPredictions.length > 0 ? {
@@ -115,6 +131,27 @@ export default function UserProfilePage({ params }: { params: { address: string 
     alert("Profile link copied to clipboard!");
   };
 
+  const copyBet = (pred: OnchainPrediction, index: number) => {
+    // Save prediction data to localStorage
+    const betData = {
+      market: pred.market,
+      edge: Number(pred.edge) / 100, // Convert basis points to percentage
+      betSize: parseFloat(pred.betSize.replace(/[^0-9.]/g, '')) || 0,
+      from: celeb?.displayName || formatAddress(userAddress),
+    };
+    
+    localStorage.setItem('copiedBet', JSON.stringify(betData));
+    
+    // Show copied feedback
+    setCopiedBet(`bet-${index}`);
+    setTimeout(() => setCopiedBet(null), 2000);
+    
+    // Navigate to calculator after short delay
+    setTimeout(() => {
+      router.push('/calculator?copied=true');
+    }, 500);
+  };
+
   return (
     <main className="min-h-screen bg-gradient-to-b from-black via-purple-950/10 to-black">
       <Navbar />
@@ -143,21 +180,58 @@ export default function UserProfilePage({ params }: { params: { address: string 
               {/* User Header */}
               <div className="glass-strong rounded-2xl p-8 mb-6">
                 <div className="flex flex-col md:flex-row items-center md:items-start gap-6">
-                  {/* Avatar */}
-                  <div className={`w-24 h-24 rounded-full bg-gradient-to-br ${getAvatarColor(userAddress)} flex items-center justify-center text-white font-bold text-3xl relative shrink-0`}>
-                    {userAddress.slice(2, 4).toUpperCase()}
-                    {userPredictions.length > 5 && (
-                      <div className="absolute -top-2 -right-2 w-8 h-8 bg-yellow-500 rounded-full flex items-center justify-center text-sm">
-                        ⭐
-                      </div>
-                    )}
-                  </div>
+                  {/* Avatar / Image */}
+                  {celeb && celeb.imageUrl ? (
+                    <div className="w-32 h-32 rounded-2xl overflow-hidden relative shrink-0 border-2 border-purple-500/30">
+                      <Image
+                        src={celeb.imageUrl}
+                        alt={celeb.displayName}
+                        fill
+                        className="object-cover"
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).style.display = 'none';
+                        }}
+                      />
+                      {celeb.verified && (
+                        <div className="absolute top-2 right-2 bg-blue-500 rounded-full p-1">
+                          <CheckCircle className="w-5 h-5 text-white" />
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <div className={`w-32 h-32 rounded-2xl bg-gradient-to-br ${getAvatarColor(userAddress)} flex items-center justify-center text-white font-bold text-4xl relative shrink-0`}>
+                      {userAddress.slice(2, 4).toUpperCase()}
+                      {userPredictions.length > 5 && (
+                        <div className="absolute -top-2 -right-2 w-8 h-8 bg-yellow-500 rounded-full flex items-center justify-center text-sm">
+                          ⭐
+                        </div>
+                      )}
+                    </div>
+                  )}
 
                   {/* User Info */}
                   <div className="flex-1 text-center md:text-left">
-                    <h1 className="text-3xl font-bold mb-2 font-mono">
-                      {formatAddress(userAddress)}
-                    </h1>
+                    <div className="flex items-center justify-center md:justify-start gap-2 mb-2">
+                      <h1 className="text-3xl font-bold">
+                        {celeb ? celeb.displayName : formatAddress(userAddress)}
+                      </h1>
+                      {celeb?.verified && (
+                        <CheckCircle className="w-6 h-6 text-blue-500" />
+                      )}
+                    </div>
+                    {celeb && celeb.bio && (
+                      <p className="text-gray-400 mb-3">{celeb.bio}</p>
+                    )}
+                    {celeb && celeb.twitter && (
+                      <a
+                        href={`https://twitter.com/${celeb.twitter.replace('@', '')}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-sm text-purple-400 hover:text-purple-300 mb-3 inline-block"
+                      >
+                        {celeb.twitter}
+                      </a>
+                    )}
                     <div className="flex flex-wrap items-center justify-center md:justify-start gap-3 mb-4">
                       <button
                         onClick={copyAddress}
@@ -232,11 +306,33 @@ export default function UserProfilePage({ params }: { params: { address: string 
                     {userPredictions.map((pred: OnchainPrediction, idx: number) => (
                       <div
                         key={idx}
-                        className="glass rounded-xl p-5 hover:bg-white/10 transition-all"
+                        className="glass rounded-xl p-5 hover:bg-white/10 transition-all group"
                       >
-                        {/* Market Name */}
-                        <div className="font-semibold text-lg mb-3">
-                          {pred.market}
+                        {/* Market Name & Invest Button */}
+                        <div className="flex items-start justify-between gap-4 mb-3">
+                          <div className="font-semibold text-lg flex-1">
+                            {pred.market}
+                          </div>
+                          <button
+                            onClick={() => copyBet(pred, idx)}
+                            className={`shrink-0 px-4 py-2 rounded-lg font-semibold text-sm transition-all flex items-center gap-2 ${
+                              copiedBet === `bet-${idx}`
+                                ? 'bg-green-600 text-white'
+                                : 'bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white'
+                            }`}
+                          >
+                            {copiedBet === `bet-${idx}` ? (
+                              <>
+                                <Check className="w-4 h-4" />
+                                Invested!
+                              </>
+                            ) : (
+                              <>
+                                <TrendingUp className="w-4 h-4" />
+                                Invest
+                              </>
+                            )}
+                          </button>
                         </div>
 
                         {/* Prediction Details */}
